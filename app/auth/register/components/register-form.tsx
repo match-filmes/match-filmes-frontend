@@ -1,53 +1,44 @@
 'use client'
-import { Controller, FormProvider, useForm } from "react-hook-form"
-import z from "zod"
-import { zodResolver } from '@hookform/resolvers/zod'
 import { FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+import { Controller, FormProvider, useForm } from "react-hook-form"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAxios } from "@/hooks/use-axios"
-import { Button } from "@/components/ui/button"
+import z from "zod"
 
 export const registerSchema = z.object({
     fullName: z.string().max(50),
     username: z.string().max(50),
     email: z.string().email({ message: 'O e-mail não é válido.' }),
     password: z.string().min(6, { message: 'A senha deve conter no mínimo 6 caracteres.' }),
-    //confirmPassword: z.string().min(6, { message: 'A senha deve conter no mínimo 6 caracteres.' })
 })
-/* .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
-        ctx.addIssue({
-            code: "custom",
-            message: "As senhas não coincidem.",
-            path: ['confirmPassword']
-        })
-    }
-}) */
 
 export type User = z.infer<typeof registerSchema>
 
 export default function RegisterForm() {
-    const { response, error, loading, refetch } = useAxios({
-        method: "POST",
-        url: "/api/auth/register",
-    })
-
     const methods = useForm<User>({
         resolver: zodResolver(registerSchema),
+    })
+
+    const { response, error, loading, refetch } = useAxios({
+        method: "POST",
+        url: "/auth/register",
     })
 
     const onSubmit = async (data: User) => {
         try {
             await refetch({
                 method: 'POST',
-                url: "/api/auth/register",
+                url: "/auth/register",
                 data
             })
             methods.reset()
+            console.log(data)
         } catch (error) {
             console.error("Erro ao realizar o cadastro.", error)
         }
-    }
+    } 
 
     return (
         <FormProvider {...methods}>
@@ -107,20 +98,6 @@ export default function RegisterForm() {
                     />
                     {methods.formState.errors.password && <FormMessage>{methods.formState.errors.password.message}</FormMessage>}
                 </FormItem>
-
-                {/* <FormItem>
-                <FormLabel htmlFor="confirmPassword">Confirme a Senha:</FormLabel>
-                <Controller
-                    name="confirmPassword"
-                    control={control}
-                    render={({ field }) => (
-                        <FormControl>
-                            <Input id="confirmPassword" type="password" {...field} />
-                        </FormControl>
-                    )}
-                />
-                {errors.confirmPassword && <FormMessage>{errors.confirmPassword.message}</FormMessage>}
-            </FormItem> */}
 
                 <Button type="submit" disabled={loading}>
                     {loading ? 'Carregando...' : 'Confirmar'}
