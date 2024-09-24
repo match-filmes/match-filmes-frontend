@@ -1,4 +1,5 @@
 'use client'
+
 import {
   FormItem,
   FormLabel,
@@ -9,41 +10,51 @@ import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useAxios } from '@/hooks/use-axios'
 import z from 'zod'
+import { useAuth } from '@/contexts/auth-context'
+import { useState } from 'react'
+import { RegisterData } from '@/interfaces/auth-data'
 
 export const registerSchema = z.object({
-  fullName: z.string().max(50),
-  username: z.string().max(50),
-  email: z.string().email({ message: 'O e-mail não é válido.' }),
+  fullName: z.string().max(50).nonempty('O nome completo é obrigatório.'),
+  username: z.string().max(50).nonempty('O usuário é obrigatório.'),
+  email: z
+    .string()
+    .email({ message: 'O e-mail não é válido.' })
+    .nonempty('O e-mail é obrigatório.'),
   password: z
     .string()
-    .min(6, { message: 'A senha deve conter no mínimo 6 caracteres.' }),
+    .min(6, { message: 'A senha deve conter no mínimo 6 caracteres.' })
+    .nonempty('A senha é obrigatória.'),
 })
 
-export type User = z.infer<typeof registerSchema>
-
 export default function RegisterForm() {
-  const methods = useForm<User>({
+  const methods = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
   })
 
-  const { response, error, loading, refetch } = useAxios({
-    method: 'POST',
-    url: '/auth/register',
-  })
+  const { register } = useAuth()
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
+  const [successMessage, setSuccessMessage] = useState<string>('')
 
-  const onSubmit = async (data: User) => {
+  const onSubmit = async (data: RegisterData) => {
+    setLoading(true)
+    setError('')
+    setSuccessMessage('')
     try {
-      await refetch({
-        method: 'POST',
-        url: '/auth/register',
-        data,
-      })
-      methods.reset()
-      console.log(data)
+      const result = await register(data)
+      if (result.success) {
+        methods.reset()
+        setSuccessMessage('Cadastro Realizado com Sucesso!')
+      } else {
+        setError(result.error || 'Erro ao realizar o cadastro.')
+      }
     } catch (error) {
-      console.error('Erro ao realizar o cadastro.', error)
+      setError('Erro ao realizar o cadastro.')
+      console.error(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -125,7 +136,7 @@ export default function RegisterForm() {
         </Button>
 
         {error && <p>Ocorreu um Erro: {error}</p>}
-        {response && <p>Cadastro Realizado com Sucesso!</p>}
+        {successMessage && <p>{successMessage}</p>}
       </form>
     </FormProvider>
   )

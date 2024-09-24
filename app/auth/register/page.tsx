@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import RegisterForm from './components/register-form'
 
 export const metadata: Metadata = {
-  title: 'Cadastro | Match Filmes',
+  title: 'Cadastro',
   description: 'Realize o cadastro para aproveitar os melhores sucessos.',
 }
 

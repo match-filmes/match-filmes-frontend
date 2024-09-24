@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import './globals.css'
 import { Metadata } from 'next'
 import { Header } from '@/components/application/header'
+import { AuthProvider } from '@/contexts/auth-context'
 
 const fontHeading = Manrope({
   subsets: ['latin'],
@@ -51,8 +52,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           fontBody.variable,
         )}
       >
-        <Header title="Match Filmes" />
-        {children}
+        <AuthProvider>
+          <Header title="Match Filmes" />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
