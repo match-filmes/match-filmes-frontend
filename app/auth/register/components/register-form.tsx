@@ -1,21 +1,35 @@
 'use client'
 
-import {
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import Link from 'next/link'
+import { useAuth } from '@/contexts/auth-context'
+import { RegisterData } from '@/interfaces/auth-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import z from 'zod'
-import { useAuth } from '@/contexts/auth-context'
-import { useState } from 'react'
-import { RegisterData } from '@/interfaces/auth-data'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import router from 'next/router'
+import Cookies from 'js-cookie'
+import { useToast } from '@/hooks/use-toast'
 
-export const registerSchema = z.object({
+const registerSchema = z.object({
   fullName: z.string().max(50).nonempty('O nome completo é obrigatório.'),
   username: z.string().max(50).nonempty('O usuário é obrigatório.'),
   email: z
@@ -28,12 +42,22 @@ export const registerSchema = z.object({
     .nonempty('A senha é obrigatória.'),
 })
 
+type RegisterFormData = z.infer<typeof registerSchema>
+
 export default function RegisterForm() {
-  const methods = useForm<RegisterData>({
+  const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      fullName: '',
+      username: '',
+      email: '',
+      password: '',
+    },
   })
 
   const { register } = useAuth()
+  const { toast } = useToast()
+
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
   const [successMessage, setSuccessMessage] = useState<string>('')
@@ -45,13 +69,34 @@ export default function RegisterForm() {
     try {
       const result = await register(data)
       if (result.success) {
-        methods.reset()
-        setSuccessMessage('Cadastro Realizado com Sucesso!')
+        form.reset()
+        toast({
+          title: 'Cadastro',
+          description: 'Cadastro realizado com succeso.',
+        })
+
+        const callbackUrl = Cookies.get('callbackUrl') || '/inicio'
+
+        Cookies.remove('callbackUrl')
+
+        router.push(callbackUrl)
       } else {
         setError(result.error || 'Erro ao realizar o cadastro.')
+
+        toast({
+          title: 'Erro',
+          description: result.error || 'Erro ao realizar o cadastro.',
+          variant: 'destructive',
+        })
       }
     } catch (error) {
       setError('Erro ao realizar o cadastro.')
+      toast({
+        title: 'Erro',
+        description: 'Erro ao realizar o cadastro.',
+        variant: 'destructive',
+      })
+
       console.error(error)
     } finally {
       setLoading(false)
@@ -59,85 +104,125 @@ export default function RegisterForm() {
   }
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)}>
-        <FormItem>
-          <FormLabel htmlFor="fullName">Nome Completo:</FormLabel>
-          <Controller
-            name="fullName"
-            control={methods.control}
-            render={({ field }) => (
-              <FormControl>
-                <Input id="fullName" {...field} />
-              </FormControl>
-            )}
-          />
-          {methods.formState.errors.fullName && (
-            <FormMessage>
-              {methods.formState.errors.fullName.message}
-            </FormMessage>
-          )}
-        </FormItem>
+    <div
+      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage:
+          'linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(/placeholder_banner.png)',
+      }}
+    >
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-left">
+            Cadastro
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome Completo</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite seu nome completo"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormItem>
-          <FormLabel htmlFor="username">Nome de Usuário:</FormLabel>
-          <Controller
-            name="username"
-            control={methods.control}
-            render={({ field }) => (
-              <FormControl>
-                <Input id="username" {...field} />
-              </FormControl>
-            )}
-          />
-          {methods.formState.errors.username && (
-            <FormMessage>
-              {methods.formState.errors.username.message}
-            </FormMessage>
-          )}
-        </FormItem>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome de Usuário</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Digite seu nome de usuário"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormItem>
-          <FormLabel htmlFor="email">E-mail:</FormLabel>
-          <Controller
-            name="email"
-            control={methods.control}
-            render={({ field }) => (
-              <FormControl>
-                <Input id="email" type="email" {...field} />
-              </FormControl>
-            )}
-          />
-          {methods.formState.errors.email && (
-            <FormMessage>{methods.formState.errors.email.message}</FormMessage>
-          )}
-        </FormItem>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-mail</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Digite seu e-mail"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormItem>
-          <FormLabel htmlFor="password">Senha:</FormLabel>
-          <Controller
-            name="password"
-            control={methods.control}
-            render={({ field }) => (
-              <FormControl>
-                <Input id="password" type="password" {...field} />
-              </FormControl>
-            )}
-          />
-          {methods.formState.errors.password && (
-            <FormMessage>
-              {methods.formState.errors.password.message}
-            </FormMessage>
-          )}
-        </FormItem>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Digite sua senha"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Carregando...' : 'Confirmar'}
-        </Button>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-        {error && <p>Ocorreu um Erro: {error}</p>}
-        {successMessage && <p>{successMessage}</p>}
-      </form>
-    </FormProvider>
+              {successMessage && (
+                <Alert
+                  variant="default"
+                  className="bg-green-100 text-green-800 border-green-300"
+                >
+                  <AlertDescription>{successMessage}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Carregando...' : 'Confirmar'}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-muted-foreground">
+            Já tem uma conta?{' '}
+            <Link
+              href="/auth/login"
+              className="font-medium text-primary hover:underline"
+            >
+              Faça login
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
   )
 }
