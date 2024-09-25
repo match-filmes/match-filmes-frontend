@@ -18,12 +18,14 @@ export function middleware(req: NextRequest) {
   if (!token) {
     const response = NextResponse.redirect(new URL('/auth/login', req.url))
 
-    response.cookies.set('callbackUrl', pathname, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    })
+    if (!pathname.endsWith('.png')) {
+      response.cookies.set('callbackUrl', pathname, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+      })
+    }
 
     return response
   }
