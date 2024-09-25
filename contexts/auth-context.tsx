@@ -14,6 +14,7 @@ import { baseUrl } from '@/utils/Endpoints'
 import { User } from '@/interfaces/user'
 import { RegisterData, LoginData } from '@/interfaces/auth-data'
 import { ErrorResponse, AuthResponse } from '@/interfaces/auth-response'
+import { useRouter } from 'next/navigation'
 
 axios.defaults.baseURL = baseUrl
 
@@ -42,17 +43,21 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const token = Cookies.get('token')
     if (token) {
       axios
-        .get<User>('/auth/user', {
+        .post<{ user: User; token: string }>('/auth/refresh', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-        .then((response) => setUser(response.data))
+        .then((response) => {
+          setUser(response.data.user)
+          Cookies.set('token', response.data.token, { expires: 7 })
+        })
         .catch(() => {
           Cookies.remove('token')
           setUser(null)
@@ -70,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           loginData,
         )
         const { token, user } = response.data
-        Cookies.set('token', token)
+        Cookies.set('token', token, { expires: 7 })
         setUser(user)
         return { success: true }
       } catch (error) {
@@ -87,7 +92,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = useCallback((): void => {
     Cookies.remove('token')
     setUser(null)
-  }, [])
+    router.push('/auth/login')
+  }, [router])
 
   const register = useCallback(
     async (
@@ -99,7 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           userData,
         )
         const { token, user } = response.data
-        Cookies.set('token', token)
+        Cookies.set('token', token, { expires: 7 })
         setUser(user)
         return { success: true }
       } catch (error) {
