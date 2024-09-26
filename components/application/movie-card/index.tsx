@@ -18,7 +18,7 @@ export function MovieCard({
     <Link href="#" className="group" prefetch={false}>
       <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden">
         <Image
-          src={imageUrl}
+          src={`https://image.tmdb.org/t/p/w600_and_h900_bestv2${imageUrl}`}
           width={300}
           height={450}
           alt={altText}

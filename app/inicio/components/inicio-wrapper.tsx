@@ -32,14 +32,17 @@ export default function InicioWrapper() {
         // Log the token for debugging (remove in production)
         console.log('Token:', token)
 
-        const response = await api.get<MovieProps[]>('/movies/popular', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*',
+        const response = await api.get<{ content: MovieProps[] }>(
+          '/movies/popular',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Access-Control-Allow-Origin': '*',
+            },
           },
-        })
-
-        setPopularMovies(response.data)
+        )
+        console.log(`POPULAR MOVIES: ${JSON.stringify(response.data.content)}`)
+        setPopularMovies(response.data.content)
       } catch (err) {
         console.error('Failed to fetch popular movies:', err)
         if (axios.isAxiosError(err)) {
@@ -77,7 +80,9 @@ export default function InicioWrapper() {
               <MovieCard
                 key={movie.title}
                 title={movie.title}
-                description={movie.genres.map((genre) => genre.name).join(', ')}
+                description={movie?.genres
+                  ?.map((genre) => genre?.name)
+                  .join(', ')}
                 imageUrl={movie.poster}
                 altText={movie.title}
               />

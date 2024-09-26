@@ -10,7 +10,7 @@ export function MovieSection({ title, children }: MovieSectionProps) {
 
   return (
     <section className="py-8 md:py-12 lg:py-16">
-      <div className="container px-4 md:px-6 lg:px-8">
+      <div className="w-full px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
             {title}
