@@ -13,7 +13,7 @@ import axios from 'axios'
 
 const api = axios.create({
   baseURL: baseUrl,
-  withCredentials: true, // This is important for CORS if your API uses cookies
+  withCredentials: false, // This is important for CORS if your API uses cookies
 })
 
 export default function InicioWrapper() {
