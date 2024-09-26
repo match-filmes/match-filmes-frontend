@@ -61,7 +61,6 @@ export default function LoginForm() {
     try {
       const result = await login(data)
       if (result.success) {
-        form.reset()
         toast({
           title: 'Login',
           description: 'Login realizado com succeso.',
