@@ -23,6 +23,14 @@ export function Header({ title }: HeaderProps) {
   const { user, logout } = useAuth()
   const router = useRouter()
 
+  const getInitials = (fullName: string) => {
+    const nameParts = fullName.split(' ')
+    const firstInitial = nameParts[0]?.[0] || ''
+    const lastInitial =
+      nameParts.length > 1 ? nameParts[nameParts.length - 1][0] : ''
+    return (firstInitial + lastInitial).toUpperCase()
+  }
+
   return (
     <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-50 px-4 md:px-6 h-14 flex items-center justify-between">
       <Link href="#" className="flex items-center gap-2" prefetch={false}>
@@ -70,7 +78,7 @@ export function Header({ title }: HeaderProps) {
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-9 w-9">
                   <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
-                  <AvatarFallback>{user?.fullName}</AvatarFallback>
+                  <AvatarFallback>{getInitials(user?.fullName)}</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
