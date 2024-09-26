@@ -66,9 +66,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .catch(() => {
           Cookies.remove('token')
           setUser(null)
+          router.push('/auth/login')
         })
     }
-  }, [])
+  }, [router])
 
   const login = useCallback(
     async (
@@ -82,6 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { token, user } = response.data
         Cookies.set('token', token, { expires: 7 })
         setUser(user)
+        router.push('/inicio')
         return { success: true }
       } catch (error) {
         const err = error as AxiosError<ErrorResponse>
@@ -91,7 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
     },
-    [],
+    [router],
   )
 
   const logout = useCallback((): void => {
@@ -112,6 +114,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { token, user } = response.data
         Cookies.set('token', token, { expires: 7 })
         setUser(user)
+        router.push('/inicio')
+
         return { success: true }
       } catch (error) {
         const err = error as AxiosError<ErrorResponse>
@@ -121,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
     },
-    [],
+    [router],
   )
 
   return (
