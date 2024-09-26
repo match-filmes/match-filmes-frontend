@@ -47,7 +47,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const token = Cookies.get('token')
-    console.log('Token: ' + token)
     if (token) {
       axios
         .post<{ user: User; token: string }>(
