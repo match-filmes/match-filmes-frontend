@@ -25,7 +25,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import router from 'next/router'
+import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import { useToast } from '@/hooks/use-toast'
 
@@ -62,14 +62,18 @@ export default function RegisterForm() {
   const [error, setError] = useState<string>('')
   const [successMessage, setSuccessMessage] = useState<string>('')
 
+  const router = useRouter()
+
   const onSubmit = async (data: RegisterData) => {
     setLoading(true)
     setError('')
     setSuccessMessage('')
     try {
       const result = await register(data)
+      console.log(result.success)
       if (result.success) {
-        form.reset()
+        console.log('pass, but reset.')
+
         toast({
           title: 'Cadastro',
           description: 'Cadastro realizado com succeso.',
