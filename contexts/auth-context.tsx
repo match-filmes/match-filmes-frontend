@@ -47,11 +47,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const token = Cookies.get('token')
+    console.log("Token: " + token)
     if (token) {
       axios
-        .post<{ user: User; token: string }>('/auth/refresh', {
+        .post<{ user: User; token: string }>('/auth/refresh', {}, {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Access-Control-Allow-Origin': '*',
           },
         })
         .then((response) => {
