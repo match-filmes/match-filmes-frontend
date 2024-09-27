@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import FavoriteButton from '../favorite-button'
 
 interface MovieCardProps {
   title: string
@@ -35,7 +34,7 @@ export function MovieCard({
               <h3 className="text-lg font-bold">{title}</h3>
               <p className="text-sm">{description}</p>
             </div>
-{/*             <div className="cursor-pointer">
+            {/*             <div className="cursor-pointer">
               <FavoriteButton movieId={id} unfavorite={() => {}} />
             </div> */}
           </div>
