@@ -6,14 +6,16 @@ import { PlayIcon } from '@/components/application/icons'
 interface ContinueWatchingCardProps {
   imageUrl: string
   altText: string
+  movieId?: string
 }
 
 export function ContinueWatchingCard({
   imageUrl,
   altText,
+  movieId = '',
 }: ContinueWatchingCardProps) {
   return (
-    <Link href="#" className="group relative" prefetch={false}>
+    <Link href={`/${movieId}`} className="group relative" prefetch={false}>
       <div className="w-full aspect-[2/3] rounded-lg overflow-hidden">
         <Image
           src={imageUrl}

@@ -82,9 +82,6 @@ export function Header({ title }: HeaderProps) {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => router.push('/conta')}>
-                  Minha Conta
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push('/configuracoes')}>
                   Configurações
                 </DropdownMenuItem>
