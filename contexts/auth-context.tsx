@@ -25,6 +25,7 @@ interface AuthContextType {
   register: (
     userData: RegisterData,
   ) => Promise<{ success: boolean; error?: string }>
+  getToken: () => string | undefined
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -83,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { token, user } = response.data
         Cookies.set('token', token, { expires: 7 })
         setUser(user)
-        router.push('/inicio')
+        router.push('/filmes')
         return { success: true }
       } catch (error) {
         const err = error as AxiosError<ErrorResponse>
@@ -114,7 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { token, user } = response.data
         Cookies.set('token', token, { expires: 7 })
         setUser(user)
-        router.push('/inicio')
+        router.push('/filmes')
 
         return { success: true }
       } catch (error) {
@@ -128,8 +129,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [router],
   )
 
+  const getToken = () => Cookies.get('token')
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider value={{ user, login, logout, register, getToken }}>
       {children}
     </AuthContext.Provider>
   )

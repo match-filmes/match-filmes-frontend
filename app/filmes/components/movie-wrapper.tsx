@@ -2,7 +2,7 @@ import { HeroSection } from '@/components/application/hero-section'
 import { MovieSection } from '@/components/application/movie-section'
 import { baseUrl } from '@/utils/Endpoints'
 
-export default function InicioWrapper() {
+export default function MovieWrapper() {
   const popularMoviesUrl = `${baseUrl}/movies/popular?size=6`
   const recommendedMoviesUrl = `${baseUrl}/movies/recommended?size=6`
 

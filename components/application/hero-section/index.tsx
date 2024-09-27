@@ -5,7 +5,6 @@ import axios from 'axios'
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { StarIcon } from '@/components/application/icons/star-icon'
 import { MovieProps } from '@/interfaces/movie-props'
 import {
   Dialog,
@@ -15,6 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { useAuth } from '@/contexts/auth-context'
+import StarRating from '../star-rating'
+import { StarIcon } from 'lucide-react'
 
 interface HeroSectionProps {
   requestUrl: string
@@ -28,16 +30,21 @@ export function HeroSection({ requestUrl }: HeroSectionProps) {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const pathname = usePathname()
+  const { getToken } = useAuth()
 
   useEffect(() => {
     const fetchMovie = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(requestUrl)
+        const response = await axios.get(requestUrl, {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        })
 
         const movies = Array.isArray(response.data.content)
           ? response.data.content
-          : [response.data.content]
+          : [response.data]
 
         if (movies.length > 0) {
           setMovie(movies[0])
@@ -53,7 +60,7 @@ export function HeroSection({ requestUrl }: HeroSectionProps) {
     }
 
     fetchMovie()
-  }, [requestUrl])
+  }, [getToken, requestUrl])
 
   if (loading) {
     return (
@@ -127,85 +134,60 @@ export function HeroSection({ requestUrl }: HeroSectionProps) {
                 Detalhes
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[1080px]">
               <DialogHeader>
                 <DialogTitle>{title}</DialogTitle>
                 <DialogDescription>
                   Informações detalhadas sobre o filme
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-2 gap-4 py-4">
+                {/* Left Column: Image */}
+                <div className="flex justify-center">
                   <Image
                     src={'https://image.tmdb.org/t/p/w500' + poster}
                     width={500}
                     height={750}
                     alt={title}
-                    className="col-span-4 w-full h-auto rounded-lg"
+                    className="w-full h-auto rounded-lg"
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <span className="font-bold">Descrição:</span>
-                  <p className="col-span-3">{description}</p>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <span className="font-bold">Gêneros:</span>
-                  <p className="col-span-3">
-                    {genres.map((genre) => genre.name).join(', ')}
-                  </p>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <span className="font-bold">Avaliação:</span>
-                  <div className="col-span-3 flex items-center">
-                    {typeof voteAverage === 'number' &&
-                    voteAverage >= 0 &&
-                    voteAverage <= 5 ? (
-                      <>
-                        {[...Array(Math.floor(voteAverage))].map((_, i) => (
-                          <StarIcon
-                            key={i}
-                            className="w-5 h-5 text-yellow-500"
-                          />
-                        ))}
-                        {[...Array(5 - Math.floor(voteAverage))].map((_, i) => (
-                          <StarIcon key={i} className="w-5 h-5 text-gray-400" />
-                        ))}
-                        <span className="ml-2">
-                          {voteAverage.toFixed(1)} / 5
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        {[...Array(5)].map((_, i) => (
-                          <StarIcon key={i} className="w-5 h-5 text-gray-400" />
-                        ))}
-                        <span className="ml-2">N/A</span>
-                      </>
-                    )}
+
+                {/* Right Column: Info */}
+                <div className="space-y-4">
+                  {/* Description */}
+                  <div className="grid grid-rows-2 gap-4 items-start">
+                    <span className="font-bold col-span-1">Descrição:</span>
+                    <p className="col-span-3">{description}</p>
+                  </div>
+
+                  {/* Genres */}
+                  <div className="grid grid-rows-2 gap-4 items-start">
+                    <span className="font-bold col-span-1">Gêneros:</span>
+                    <p className="col-span-3">
+                      {genres.map((genre) => genre.name).join(', ')}
+                    </p>
+                  </div>
+
+                  {/* Rating */}
+                  <div className="grid grid-rows-2 gap-4 items-start">
+                    <span className="font-bold col-span-1">Avaliação:</span>
+                    <div className="col-span-3 flex items-center">
+                      <StarRating voteAverage={voteAverage} />
+                    </div>
                   </div>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
+          <Button
+            className="bg-white text-black hover:bg-gray-200 transition-colors aspect-square h-8 w-8 p-2"
+            onClick={() => {}}
+          >
+            <StarIcon className="w-full h-full" />
+          </Button>
 
-          {typeof voteAverage === 'number' &&
-          voteAverage >= 0 &&
-          voteAverage <= 5 ? (
-            <div className="flex items-center gap-1 text-yellow-500">
-              {[...Array(Math.floor(voteAverage))].map((_, i) => (
-                <StarIcon key={i} className="w-5 h-5" />
-              ))}
-              {[...Array(5 - Math.floor(voteAverage))].map((_, i) => (
-                <StarIcon key={i} className="w-5 h-5 text-gray-400" />
-              ))}
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-yellow-500">
-              {[...Array(5)].map((_, i) => (
-                <StarIcon key={i} className="w-5 h-5 text-gray-400" />
-              ))}
-            </div>
-          )}
+          <StarRating voteAverage={voteAverage} />
         </div>
       </div>
     </section>
