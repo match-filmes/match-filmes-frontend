@@ -181,7 +181,8 @@ export function HeroSection({ requestUrl }: HeroSectionProps) {
             </DialogContent>
           </Dialog>
           <Button
-            className="bg-white text-black hover:bg-gray-200 transition-colors aspect-square h-8 w-8 p-2"
+            variant="outline"
+            className="text-white hover:bg-white/20 transition-colors aspect-square p-2"
             onClick={() => {}}
           >
             <StarIcon className="w-full h-full" />
