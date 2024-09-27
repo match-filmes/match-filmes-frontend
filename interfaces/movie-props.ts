@@ -7,4 +7,6 @@ export interface MovieProps {
   voteAverage: number
   poster: string
   genres: Genre[]
+  isFavorite?: boolean
+  id?: number
 }
