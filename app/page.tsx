@@ -1,9 +1,9 @@
-import InicioPage from './inicio/page'
+import FilmesPage from './filmes/page'
 
 export default function Home() {
   return (
     <>
-      <InicioPage />
+      <FilmesPage />
     </>
   )
 }

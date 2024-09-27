@@ -6,6 +6,7 @@ interface MovieCardProps {
   description: string
   imageUrl: string
   altText: string
+  id: number
 }
 
 export function MovieCard({
@@ -13,9 +14,10 @@ export function MovieCard({
   description,
   imageUrl,
   altText,
+  id,
 }: MovieCardProps) {
   return (
-    <Link href="#" className="group" prefetch={false}>
+    <Link href={`/filmes/${id}`} className="group" prefetch={false}>
       <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden">
         <Image
           src={`https://image.tmdb.org/t/p/w600_and_h900_bestv2${imageUrl}`}

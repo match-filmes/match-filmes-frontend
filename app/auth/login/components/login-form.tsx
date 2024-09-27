@@ -66,7 +66,7 @@ export default function LoginForm() {
           description: 'Login realizado com succeso.',
         })
 
-        const callbackUrl = Cookies.get('callbackUrl') || '/inicio'
+        const callbackUrl = Cookies.get('callbackUrl') || '/filmes'
 
         Cookies.remove('callbackUrl')
 

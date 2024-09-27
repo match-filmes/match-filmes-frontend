@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/carousel'
 import { MovieProps } from '@/interfaces/movie-props'
 import { MovieCard } from '../movie-card'
+import { useAuth } from '@/contexts/auth-context'
 
 interface MovieSectionProps {
   title: string
@@ -24,7 +25,8 @@ export function MovieSection({ title, requestUrl }: MovieSectionProps) {
   const [, setTotalPages] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAppending, setIsAppending] = useState(false) // Track if new items are being appended
+  const [isAppending, setIsAppending] = useState(false)
+  const { getToken } = useAuth()
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -32,7 +34,11 @@ export function MovieSection({ title, requestUrl }: MovieSectionProps) {
       setLoading(true)
 
       try {
-        const response = await axios.get(`${requestUrl}&page=${page}&size=12`)
+        const response = await axios.get(`${requestUrl}?page=${page}&size=12`, {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        })
         const { content, page: pageInfo } = response.data
         setMovies((prevMovies) => [...prevMovies, ...content])
         setTotalPages(pageInfo.totalPages)
@@ -44,7 +50,7 @@ export function MovieSection({ title, requestUrl }: MovieSectionProps) {
         console.error('Failed to fetch movies', error)
       } finally {
         setLoading(false)
-        setIsAppending(false) // Stop the appending process
+        setIsAppending(false)
       }
     }
 
@@ -55,7 +61,7 @@ export function MovieSection({ title, requestUrl }: MovieSectionProps) {
     if (currentIndex < movies.length - 6) {
       setCurrentIndex((prevIndex) => prevIndex + 1)
     } else if (hasMore && !isAppending) {
-      setIsAppending(true) // Start appending more movies
+      setIsAppending(true)
       setPage((prevPage) => prevPage + 1)
     }
   }
@@ -89,6 +95,7 @@ export function MovieSection({ title, requestUrl }: MovieSectionProps) {
                     .join(', ')}
                   imageUrl={movie.poster}
                   altText={movie.title}
+                  id={movie.id}
                 />
               </CarouselItem>
             ))}
