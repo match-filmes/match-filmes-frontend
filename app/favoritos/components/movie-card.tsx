@@ -1,15 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import React from 'react'
-import { HeartFilledIcon } from '@radix-ui/react-icons'
-import axios from 'axios'
-import Cookies from 'js-cookie'
-import { baseUrl } from '@/utils/Endpoints'
-
-const api = axios.create({
-  baseURL: baseUrl,
-  withCredentials: false,
-})
+import FavoriteButton from '@/components/application/favorite-button'
 
 interface MovieCardProps {
   id: number | undefined
@@ -17,6 +9,8 @@ interface MovieCardProps {
   description: string
   imageUrl: string
   altText: string
+  isFavorite: boolean
+  onRemove: (id: number) => void
 }
 
 export function MovieCard({
@@ -25,22 +19,12 @@ export function MovieCard({
   description,
   imageUrl,
   altText,
+  isFavorite,
+  onRemove,
 }: MovieCardProps) {
-  const unfavorite = async () => {
-    try {
-      const token = Cookies.get('token')
-      if (!token) {
-        throw new Error('No token found')
-      }
-
-      await api.delete(`/movies/favorite/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Access-Control-Allow-Origin': '*',
-        },
-      })
-    } catch (error) {
-      console.error('Failed to update favorite status', error)
+  const handleUnfavorite = () => {
+    if (id) {
+      onRemove(id)
     }
   }
 
@@ -62,11 +46,10 @@ export function MovieCard({
             <p className="text-sm truncate">{description}</p>
           </div>
           <div className="cursor-pointer">
-            <HeartFilledIcon
-              width={24}
-              height={24}
-              className="ml-2 opacity-100 transition-opacity"
-              onClick={unfavorite}
+            <FavoriteButton
+              movieId={id}
+              isFavorite={isFavorite}
+              unfavorite={handleUnfavorite}
             />
           </div>
         </div>

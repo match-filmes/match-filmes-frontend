@@ -55,6 +55,12 @@ export default function Favoritos() {
     fetchFavoriteMovies()
   }, [])
 
+  const handleRemoveMovie = (movieId: number) => {
+    setFavoriteMovies((prevMovies) =>
+      prevMovies.filter((movie) => movie.id !== movieId),
+    )
+  }
+
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
@@ -82,6 +88,8 @@ export default function Favoritos() {
                   imageUrl={movie.poster}
                   altText={movie.title}
                   id={movie.id}
+                  isFavorite={true}
+                  onRemove={handleRemoveMovie}
                 />
               ))
             ) : (

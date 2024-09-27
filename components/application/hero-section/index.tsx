@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import { useAuth } from '@/contexts/auth-context'
 import StarRating from '../star-rating'
-import { StarIcon } from 'lucide-react'
+import FavoriteButton from '../favorite-button'
 
 interface HeroSectionProps {
   requestUrl: string
@@ -180,14 +180,7 @@ export function HeroSection({ requestUrl }: HeroSectionProps) {
               </div>
             </DialogContent>
           </Dialog>
-          <Button
-            variant="outline"
-            className="text-white hover:bg-white/20 transition-colors aspect-square p-2"
-            onClick={() => {}}
-          >
-            <StarIcon className="w-full h-full" />
-          </Button>
-
+          <FavoriteButton movieId={id} unfavorite={() => {}} />
           <StarRating voteAverage={voteAverage} />
         </div>
       </div>

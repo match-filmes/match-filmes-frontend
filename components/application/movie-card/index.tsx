@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import FavoriteButton from '../favorite-button'
 
 interface MovieCardProps {
   title: string
@@ -29,9 +30,14 @@ export function MovieCard({
         />
         <div className="hidden group group-hover:flex transition-all">
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent group" />
-          <div className="absolute bottom-4 left-4 text-white group">
-            <h3 className="text-lg font-bold">{title}</h3>
-            <p className="text-sm">{description}</p>
+          <div className="absolute bottom-4 left-4 right-4 text-white flex justify-between items-center">
+            <div className="flex-1 bottom-4 left-4 text-white group">
+              <h3 className="text-lg font-bold">{title}</h3>
+              <p className="text-sm">{description}</p>
+            </div>
+{/*             <div className="cursor-pointer">
+              <FavoriteButton movieId={id} unfavorite={() => {}} />
+            </div> */}
           </div>
         </div>
       </div>
