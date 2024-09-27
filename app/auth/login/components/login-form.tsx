@@ -28,6 +28,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import { useToast } from '@/hooks/use-toast'
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 const loginSchema = z.object({
   username: z.string().nonempty('O nome de usuário é obrigatório.'),
@@ -54,6 +55,11 @@ export default function LoginForm() {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
+  const [passwordHidden, setPasswordHidden] = useState(false)
+
+  const hideShowPassword = () => {
+    setPasswordHidden(!passwordHidden)
+  }
 
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true)
@@ -133,11 +139,23 @@ export default function LoginForm() {
                   <FormItem>
                     <FormLabel>Senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Digite sua senha"
-                        {...field}
-                      />
+                      <div className="w-full h-fit gap-1 grid grid-cols-[1fr,2.5rem]">
+                        <Input
+                          type={passwordHidden ? 'text' : 'password'}
+                          placeholder="Digite sua senha"
+                          {...field}
+                        />
+                        <button
+                          id="password-eye"
+                          className="h-[90%] w-10 aspect-square px-2 border border-zinc-800 rounded-md flex items-center justify-center shadow"
+                          type="button"
+                          onClick={hideShowPassword}
+                        >
+                          {(passwordHidden && (
+                            <EyeOffIcon className="w-5 h-5" />
+                          )) || <EyeIcon className="w-5 h-5" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
