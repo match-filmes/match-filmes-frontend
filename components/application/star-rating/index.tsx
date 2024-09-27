@@ -12,12 +12,19 @@ export default function StarRating({ voteAverage }: RatingProps) {
       voteAverage <= 10 ? (
         <>
           {Array.from({ length: Math.floor(voteAverage / 2) }).map((_, i) => (
-            <StarIcon key={i} className="w-5 h-5 text-yellow-500" />
+            <StarIcon
+              key={i}
+              className="w-5 h-5 text-yellow-500"
+              fillColor="#eab308"
+            />
           ))}
           {voteAverage % 2 >= 1 ? (
-            <StarIcon className="w-5 h-5 text-yellow-500 half-filled" />
+            <StarIcon
+              className="w-5 h-5 text-yellow-500 half-filled"
+              fillColor="#eab308"
+            />
           ) : null}
-          {Array.from({ length: 5 - Math.ceil(voteAverage / 2) }).map(
+          {Array.from({ length: 6 - Math.ceil(voteAverage / 2) }).map(
             (_, i) => (
               <StarIcon key={i} className="w-5 h-5 text-gray-400" />
             ),
@@ -26,7 +33,7 @@ export default function StarRating({ voteAverage }: RatingProps) {
         </>
       ) : (
         <>
-          {Array.from({ length: 5 }).map((_, i) => (
+          {Array.from({ length: 6 }).map((_, i) => (
             <StarIcon key={i} className="w-5 h-5 text-gray-400" />
           ))}
           <span className="ml-2">N/A</span>
